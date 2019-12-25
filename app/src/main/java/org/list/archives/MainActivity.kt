@@ -5,18 +5,16 @@ import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.View
-import android.widget.ProgressBar
 import android.widget.ListView
 
-import android.widget.TextView
 import java.io.IOException
 
 
 import kotlinx.android.synthetic.main.activity_main.*
-import com.jetbrains.handson.mpp.mobile.createApplicationScreenMessage
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         listView_details = findViewById<ListView>(R.id.listView) as ListView
-        run("https://lists.mailman3.org/archives/api/list/mailman-users@mailman3.org/")
+        run("https://lists.mailman3.org/archives/api/lists/")
 
     }
 
@@ -54,11 +52,16 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 var strResponse = response.body()!!.string()
 
-                val moshi: Moshi = Moshi.Builder().build()
-                val adapter: JsonAdapter<MailingList> = moshi.adapter(MailingList::class.java)
-                val mailingList = adapter.fromJson(strResponse)
-                this@MainActivity.arrayList_details = ArrayList();
-                this@MainActivity.arrayList_details.add(mailingList!!)
+                val moshi: Moshi = Moshi.Builder().build();
+                val adapter: JsonAdapter<List<MailingList>> = moshi.adapter(Types.newParameterizedType(List::class.java, MailingList::class.java))
+                val mls = adapter.fromJson(strResponse)
+
+
+                arrayList_details = ArrayList()
+
+                for (i in 0..mls!!.lastIndex) {
+                    arrayList_details.add(mls[i])
+                }
 
                 runOnUiThread {
                     //stuff that updates ui

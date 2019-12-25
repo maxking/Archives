@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
-import org.w3c.dom.Text
 
 class CustomAdapter(context: Context, arrayListDetails:ArrayList<MailingList>) : BaseAdapter(){
 
