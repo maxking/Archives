@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
+
 plugins {
     kotlin("multiplatform")
 }
+
 
 kotlin {
     //select iOS target platform depending on the Xcode environment variables
@@ -24,10 +26,12 @@ kotlin {
 
     sourceSets["commonMain"].dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-common")
+        implementation("com.squareup.moshi:moshi:1.8.0")
     }
 
     sourceSets["androidMain"].dependencies {
         implementation("org.jetbrains.kotlin:kotlin-stdlib")
+
     }
 }
 
