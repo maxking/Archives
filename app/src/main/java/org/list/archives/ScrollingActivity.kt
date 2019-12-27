@@ -21,7 +21,11 @@ class ScrollingActivity : AppCompatActivity() {
     lateinit var listView_details: ListView
     var arrayList_details:ArrayList<Thread> = ArrayList();
     private val client = OkHttpClient()
+
     val TAG = "ScrollingActivity"
+
+    private val count = 50
+    private var page = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +39,7 @@ class ScrollingActivity : AppCompatActivity() {
 
         listView_details = findViewById<ListView>(R.id.listView) as ListView
         Log.i(TAG, "Trying to downloads threads at $threadsURL")
-        run(threadsURL)
+        run("$threadsURL?count=$count&page=$page")
     }
 
     private fun run(url: String) {

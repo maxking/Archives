@@ -14,16 +14,12 @@ import kotlinx.android.synthetic.main.activity_email_detail.*
  * in a [EmailListActivity].
  */
 class EmailDetailActivity : AppCompatActivity() {
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_email_detail)
         setSupportActionBar(detail_toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
 
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -54,6 +50,7 @@ class EmailDetailActivity : AppCompatActivity() {
                 .commit()
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {

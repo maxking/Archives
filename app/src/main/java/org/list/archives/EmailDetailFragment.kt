@@ -1,5 +1,6 @@
 package org.list.archives
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -70,11 +71,36 @@ class EmailDetailFragment : Fragment() {
         const val ARG_ITEM_ID = "item_id"
     }
 
-    fun updateContent(content: String?) {
+    fun updateContent(email: Email?) {
         activity?.runOnUiThread{
-            activity?.email_detail_container?.email_detail?.text = content
+            activity?.email_detail_container?.email_detail?.text = email?.content
+        }
+
+        activity?.fab?.setOnClickListener{ view ->
+            val emailIntent = prepareReplyIntent()
+            startActivity(emailIntent)
         }
     }
+
+    private fun prepareReplyIntent(): Intent {
+
+        val emailIntent = Intent(Intent.ACTION_SEND)
+
+        /* Fill it with Data */
+        emailIntent.setType("plain/text");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL,  item?.sender?.address?.replace(" (a) ", "@"))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Re: ${item?.subject}")
+        emailIntent.putExtra(Intent.EXTRA_TEXT, prepareQuotedContent(item?.content))
+
+        return emailIntent
+    }
+
+    private fun prepareQuotedContent(content: String?): String? {
+        return content?.split("\n")?.map{
+            "> " + it
+        }?.joinToString("\n")
+    }
+
 
     private fun run(url: String) {
 
@@ -96,7 +122,7 @@ class EmailDetailFragment : Fragment() {
                 val adapter: JsonAdapter<Email> = moshi.adapter(Email::class.java)
                 item = adapter.fromJson(strResponse)
 
-                updateContent(item?.content)
+                updateContent(item)
             }
         })
     }
