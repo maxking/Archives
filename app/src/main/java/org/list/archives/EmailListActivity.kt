@@ -50,7 +50,6 @@ class EmailListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_email_list)
 
         setSupportActionBar(toolbar)
-        toolbar.title = intent.getStringExtra("subject")
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -67,7 +66,10 @@ class EmailListActivity : AppCompatActivity() {
             twoPane = true
         }
 
+        val subject= intent.getStringExtra("subject")
         val emailsURL = intent.getStringExtra("emails")
+
+        supportActionBar?.title = subject
 
         run(emailsURL)
 

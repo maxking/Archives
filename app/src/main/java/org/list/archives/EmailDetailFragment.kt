@@ -43,7 +43,7 @@ class EmailDetailFragment : Fragment() {
                 Log.i(TAG, "Got the item from content: ${item} and item_id is ${it.getString(
                     ARG_ITEM_ID)}")
                 run(item?.url!!)
-                activity?.toolbar_layout?.title = item?.sender_name + "\n" + item?.date
+                activity?.toolbar_layout?.title = item?.sender_name
             }
         }
     }
