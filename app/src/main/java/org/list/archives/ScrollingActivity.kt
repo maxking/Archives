@@ -1,47 +1,39 @@
 package org.list.archives
 
 import android.content.Intent
-import okhttp3.*
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ListView
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.ListView
-
-import java.io.IOException
-
-
-import kotlinx.android.synthetic.main.activity_main.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import kotlinx.android.synthetic.main.thread_scrolling.*
+import okhttp3.*
+import java.io.IOException
 
+class ScrollingActivity : AppCompatActivity() {
 
-
-class MainActivity : AppCompatActivity() {
     lateinit var listView_details: ListView
-    var arrayList_details: ArrayList<MailingList> = ArrayList();
+    var arrayList_details:ArrayList<Thread> = ArrayList();
     private val client = OkHttpClient()
+    val TAG = "ScrollingActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.thread_scrolling)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
+        var threadsURL: String = intent.getStringExtra("threadsURL")
         listView_details = findViewById<ListView>(R.id.listView) as ListView
-        run("https://lists.mailman3.org/archives/api/lists/")
-
+        Log.i(TAG, "Trying to downloads threads at $threadsURL")
+        run(threadsURL)
     }
 
     private fun run(url: String) {
-
-        val TAG = "MyActivity"
 
         val request = Request.Builder()
             .url(url)
@@ -49,19 +41,14 @@ class MainActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.i(TAG, "Failed to get mailing list. $e")
+                Log.i(TAG, "Failed to get threads for mailing list. $e")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 var strResponse = response.body()!!.string()
 
                 val moshi: Moshi = Moshi.Builder().build();
-                val adapter: JsonAdapter<List<MailingList>> = moshi.adapter(
-                    Types.newParameterizedType(
-                        List::class.java,
-                        MailingList::class.java
-                    )
-                )
+                val adapter: JsonAdapter<List<Thread>> = moshi.adapter(Types.newParameterizedType(List::class.java, Thread::class.java))
                 val mls = adapter.fromJson(strResponse)
 
 
@@ -73,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread {
                     //stuff that updates ui
-                    val objAdapter = CustomAdapter(applicationContext, arrayList_details)
+                    val objAdapter = ThreadsListAdapter(applicationContext, arrayList_details)
                     listView_details.adapter = objAdapter
                     listView_details.onItemClickListener =
                         object : AdapterView.OnItemClickListener {
@@ -84,13 +71,13 @@ class MainActivity : AppCompatActivity() {
                                 id: Long
                             ) {
                                 val itemValue =
-                                    listView_details.getItemAtPosition(position) as MailingList
+                                    listView_details.getItemAtPosition(position) as Thread
 
                                 Log.i(TAG, "Clicked $position, opening a new actvity.")
 
-                                val intent = Intent(this@MainActivity, ScrollingActivity::class.java)
-                                intent.putExtra("threadsURL", itemValue.threads)
-                                Log.i(TAG, "Opening a new URL $itemValue.threads")
+                                val intent = Intent(this@ScrollingActivity, EmailListActivity::class.java)
+                                intent.putExtra("emails", itemValue.emails)
+                                Log.i(TAG, "Opening a new thread $itemValue.emails")
                                 startActivity(intent)
                             }
                         }
@@ -99,4 +86,3 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
-

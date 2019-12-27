@@ -32,3 +32,4 @@ data class MailingList (
     val threads: String,
     val emails: String
 )
+
