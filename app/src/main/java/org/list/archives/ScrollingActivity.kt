@@ -28,6 +28,11 @@ class ScrollingActivity : AppCompatActivity() {
         setContentView(R.layout.thread_scrolling)
 
         var threadsURL: String = intent.getStringExtra("threadsURL")
+        val listName = intent.getStringExtra("listName")
+        val displayName = intent.getStringExtra("displayName")
+
+        toolbar.title = displayName + "<" + listName + ">"
+
         listView_details = findViewById<ListView>(R.id.listView) as ListView
         Log.i(TAG, "Trying to downloads threads at $threadsURL")
         run(threadsURL)
@@ -77,6 +82,7 @@ class ScrollingActivity : AppCompatActivity() {
 
                                 val intent = Intent(this@ScrollingActivity, EmailListActivity::class.java)
                                 intent.putExtra("emails", itemValue.emails)
+                                intent.putExtra("subject", itemValue.subject)
                                 Log.i(TAG, "Opening a new thread $itemValue.emails")
                                 startActivity(intent)
                             }

@@ -19,14 +19,24 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/mailinglist_list" />
 
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </ListView>
+        <include layout="@layout/mailinglist_list" />
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </ListView>
+        
+    </FrameLayout>
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        toolbar.title = "lists.mailman3.org"
+
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
@@ -90,6 +92,8 @@ class MainActivity : AppCompatActivity() {
 
                                 val intent = Intent(this@MainActivity, ScrollingActivity::class.java)
                                 intent.putExtra("threadsURL", itemValue.threads)
+                                intent.putExtra("listName", itemValue.name)
+                                intent.putExtra("displayName", itemValue.display_name)
                                 Log.i(TAG, "Opening a new URL $itemValue.threads")
                                 startActivity(intent)
                             }

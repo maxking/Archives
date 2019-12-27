@@ -7,10 +7,8 @@ import java.util.HashMap
 /**
  * Helper class for providing sample content for user interfaces created by
  * Android template wizards.
- *
- * TODO: Replace all uses of this class before publishing your app.
  */
-object DummyContent {
+class DummyContent {
 
     /**
      * An array of sample (dummy) items.
@@ -27,4 +25,10 @@ object DummyContent {
         ITEM_MAP.put(item.message_id, item)
     }
 
+    fun getSize(): Int {
+        return ITEMS.size
+    }
+
 }
+
+var content = DummyContent()

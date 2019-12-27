@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.NavUtils
 import android.view.MenuItem
-import android.widget.AdapterView
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -22,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_email_list.*
 import kotlinx.android.synthetic.main.email_list_content.view.*
 import kotlinx.android.synthetic.main.email_list.*
 import okhttp3.*
+import org.list.archives.dummy.content
 import java.io.IOException
 
 /**
@@ -50,7 +50,7 @@ class EmailListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_email_list)
 
         setSupportActionBar(toolbar)
-        toolbar.title = title
+        toolbar.title = intent.getStringExtra("subject")
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -67,13 +67,12 @@ class EmailListActivity : AppCompatActivity() {
             twoPane = true
         }
 
-        var emailsURL: String = intent.getStringExtra("emails")
+        val emailsURL = intent.getStringExtra("emails")
 
-        val dum = run(emailsURL)
+        run(emailsURL)
 
-        Log.i(TAG, "Fetched total emails: " + dum.ITEMS.size)
+        Log.i(TAG, """Fetched total emails: ${content.getSize()}""")
 
-        setupRecyclerView(email_list, dum)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
@@ -110,7 +109,7 @@ class EmailListActivity : AppCompatActivity() {
                 if (twoPane) {
                     val fragment = EmailDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(EmailDetailFragment.ARG_ITEM_ID, item.message_id)
+                            putString(EmailDetailFragment.ARG_ITEM_ID, item.message_id_hash)
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -119,7 +118,7 @@ class EmailListActivity : AppCompatActivity() {
                         .commit()
                 } else {
                     val intent = Intent(v.context, EmailDetailActivity::class.java).apply {
-                        putExtra(EmailDetailFragment.ARG_ITEM_ID, item.message_id)
+                        putExtra(EmailDetailFragment.ARG_ITEM_ID, item.message_id_hash)
                     }
                     v.context.startActivity(intent)
                 }
@@ -134,8 +133,8 @@ class EmailListActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.idView.text = item.message_id
-            holder.contentView.text = item.content
+            holder.senderView.text = item.date
+            holder.dateView.text = item.sender_name
 
             with(holder.itemView) {
                 tag = item
@@ -146,15 +145,14 @@ class EmailListActivity : AppCompatActivity() {
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val idView: TextView = view.id_text
-            val contentView: TextView = view.content
+            val senderView: TextView = view.sender
+            val dateView: TextView = view.date
         }
     }
 
-    private fun run(url: String): DummyContent {
+    private fun run(url: String) {
 
         val TAG = "EmailListActivity"
-        val content = DummyContent
 
         val request = Request.Builder()
             .url(url)
@@ -174,13 +172,14 @@ class EmailListActivity : AppCompatActivity() {
 
                 for (i in 0..mls!!.lastIndex) {
                     Log.i(TAG, "Adding Email to list: " + mls[i].message_id + " from " + mls[i].sender_name)
-                    content.addItem(mls[i])
+                    content.ITEMS.add(mls[i])
+                    content.ITEM_MAP.put(mls[i].message_id_hash, mls[i])
                 }
 
+                runOnUiThread{
+                    setupRecyclerView(email_list, content)
+                }
             }
         })
-
-        Log.i(TAG, "Total items in content are: " + content.ITEM_MAP)
-        return content
     }
 }
